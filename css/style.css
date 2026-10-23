@@ -234,3 +234,38 @@ textarea { min-height: 8rem; resize: vertical; }
 
 .historico-meta { font-size: 0.8rem; color: var(--cor-texto-suave); }
 .historico-valores { max-height: 6rem; overflow: auto; overflow-wrap: anywhere; font-weight: 600; }
+
+/* ---------- 3) Responsivo e tema escuro ---------- */
+@media (max-width: 30rem) {
+  .linha { grid-template-columns: 1fr; }
+  .botao-primario { width: 100%; }
+}
+
+@media (min-width: 52rem) {
+  .conteudo {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "config resultado"
+      "config historico";
+    align-items: start;
+  }
+  .cartao-config { grid-area: config; }
+  .cartao-resultado { grid-area: resultado; }
+  .cartao-historico { grid-area: historico; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cor-fundo: #0b1220;
+    --cor-cartao: #131d33;
+    --cor-texto: #e9edf5;
+    --cor-texto-suave: #9aa7c0;
+    --cor-borda: #263454;
+    --cor-primaria: #ffc233;
+    --cor-primaria-hover: #ffd05f;
+    --cor-sobre-primaria: #14213d;
+    --cor-erro: #ffb4ab;
+    --cor-erro-fundo: #3a1b1b;
+    --cor-foco: #ffd05f;
+  }
+}
