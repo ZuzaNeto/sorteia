@@ -32,3 +32,40 @@ export function embaralhar(lista) {
   }
   return copia;
 }
+
+/** Sorteia "qtd" itens diferentes de uma lista. A ordem do resultado é a ordem do sorteio. */
+export function sortearItens(lista, qtd) {
+  if (!Number.isInteger(qtd) || qtd < 0 || qtd > lista.length) {
+    throw new RangeError('Quantidade inválida para o tamanho da lista.');
+  }
+  return embaralhar(lista).slice(0, qtd);
+}
+
+// Até esse tamanho de intervalo, montamos a lista de números e embaralhamos.
+// Acima disso, sorteamos um a um e descartamos repetidos (a quantidade é pequena
+// perto do intervalo, então quase nunca há descarte).
+const LIMITE_LISTA = 100_000;
+
+/** Sorteia "qtd" números inteiros entre min e max (inclusive). */
+export function sortearNumeros(min, max, qtd, permitirRepetidos = false) {
+  const intervalo = max - min + 1;
+
+  if (permitirRepetidos) {
+    return Array.from({ length: qtd }, () => min + inteiroAleatorio(intervalo));
+  }
+
+  if (qtd > intervalo) {
+    throw new RangeError('Não há números suficientes no intervalo.');
+  }
+
+  if (intervalo <= LIMITE_LISTA) {
+    const todos = Array.from({ length: intervalo }, (_, i) => min + i);
+    return sortearItens(todos, qtd);
+  }
+
+  const sorteados = new Set();
+  while (sorteados.size < qtd) {
+    sorteados.add(min + inteiroAleatorio(intervalo));
+  }
+  return [...sorteados];
+}
