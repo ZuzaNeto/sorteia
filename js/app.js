@@ -1,0 +1,82 @@
+/**
+ * app.js — camada de interface do Sorteia.
+ * Lê os campos da página, chama a lógica de sorteio e mostra o resultado.
+ * Todo texto dinâmico entra na página com textContent (nunca innerHTML).
+ */
+
+import { sortearItens } from './sorteio.js';
+import { validarNomes } from './validacao.js';
+
+const $ = (id) => document.getElementById(id);
+
+const el = {
+  form: $('form-sorteio'),
+  nomes: $('nomes'),
+  qtdNomes: $('qtd-nomes'),
+  ignorarRepetidos: $('ignorar-repetidos'),
+  msgResultado: $('msg-resultado'),
+  listaResultado: $('lista-resultado'),
+};
+
+/** Singular ou plural conforme a quantidade. */
+function plural(quantidade, singular, pluralForma) {
+  return quantidade === 1 ? singular : pluralForma;
+}
+
+/** Mostra um texto na área de resultado (aviso ou erro) e esconde a lista. */
+function mostrarMensagem(texto, ehErro = false) {
+  el.msgResultado.textContent = texto;
+  el.msgResultado.classList.toggle('erro', ehErro);
+  el.listaResultado.hidden = true;
+  el.listaResultado.replaceChildren();
+}
+
+/** Cria um <li> com o valor sorteado. textContent evita injeção de HTML. */
+function criarItem(valor, indice) {
+  const item = document.createElement('li');
+  item.textContent = String(valor);
+  item.style.setProperty('--i', indice); // atraso da animação, um bilhete após o outro
+  return item;
+}
+
+/** Mostra a descrição e a lista de sorteados. */
+function mostrarResultado(itens, descricao) {
+  el.msgResultado.textContent = descricao;
+  el.msgResultado.classList.remove('erro');
+  el.listaResultado.replaceChildren(...itens.map(criarItem));
+  el.listaResultado.hidden = false;
+}
+
+/** Lê o formulário de nomes e faz o sorteio. */
+function sortearNomes() {
+  const dados = validarNomes({
+    texto: el.nomes.value,
+    qtd: el.qtdNomes.value,
+    ignorarRepetidos: el.ignorarRepetidos.checked,
+  });
+  if (!dados.ok) return dados;
+
+  const itens = sortearItens(dados.nomes, dados.qtd);
+  const total = dados.nomes.length;
+  return {
+    ok: true,
+    itens,
+    descricao: `${itens.length} ${plural(itens.length, 'sorteado', 'sorteados')} entre ${total} ${plural(total, 'nome', 'nomes')}.`,
+  };
+}
+
+/** Trata o clique em "Sortear" (envio do formulário). */
+function tratarEnvio(evento) {
+  evento.preventDefault();
+  const resultado = sortearNomes();
+
+  if (!resultado.ok) {
+    mostrarMensagem(resultado.erro, true);
+    $(resultado.campo)?.focus();
+    return;
+  }
+
+  mostrarResultado(resultado.itens, resultado.descricao);
+}
+
+el.form.addEventListener('submit', tratarEnvio);
