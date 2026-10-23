@@ -1,0 +1,9 @@
+# Chaves e configurações locais: nunca versionar
+config.js
+.env
+
+# Dependências e arquivos de sistema/editor
+node_modules/
+.DS_Store
+Thumbs.db
+.vscode/
