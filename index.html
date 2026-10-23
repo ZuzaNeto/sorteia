@@ -13,6 +13,30 @@
   </header>
 
   <main id="main" class="conteudo">
+    <section class="cartao cartao-config" aria-labelledby="titulo-config">
+      <h2 id="titulo-config">Configurar sorteio</h2>
+
+      <form id="form-sorteio" novalidate>
+        <fieldset id="campos-nomes">
+          <legend class="visually-hidden">Sorteio de nomes</legend>
+
+          <label for="nomes">Nomes (um por linha)</label>
+          <textarea id="nomes" rows="8" placeholder="Ana&#10;Bruno&#10;Carla"></textarea>
+
+          <label for="qtd-nomes">Quantidade de sorteados</label>
+          <input type="number" id="qtd-nomes" min="1" value="1" inputmode="numeric">
+
+          <div class="opcao">
+            <input type="checkbox" id="ignorar-repetidos" checked>
+            <label for="ignorar-repetidos">Ignorar nomes repetidos na lista</label>
+          </div>
+        </fieldset>
+
+        <div class="acoes">
+          <button type="submit" class="botao botao-primario">Sortear</button>
+        </div>
+      </form>
+    </section>
   </main>
 
   <footer class="rodape">
