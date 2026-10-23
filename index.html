@@ -16,6 +16,11 @@
     <section class="cartao cartao-config" aria-labelledby="titulo-config">
       <h2 id="titulo-config">Configurar sorteio</h2>
 
+      <div class="modos" role="group" aria-label="Tipo de sorteio">
+        <button type="button" class="modo" data-modo="nomes" aria-pressed="true">Nomes</button>
+        <button type="button" class="modo" data-modo="numeros" aria-pressed="false">Números</button>
+      </div>
+
       <form id="form-sorteio" novalidate>
         <fieldset id="campos-nomes">
           <legend class="visually-hidden">Sorteio de nomes</legend>
@@ -29,6 +34,29 @@
           <div class="opcao">
             <input type="checkbox" id="ignorar-repetidos" checked>
             <label for="ignorar-repetidos">Ignorar nomes repetidos na lista</label>
+          </div>
+        </fieldset>
+
+        <fieldset id="campos-numeros" hidden>
+          <legend class="visually-hidden">Sorteio de números</legend>
+
+          <div class="linha">
+            <div>
+              <label for="num-min">Mínimo</label>
+              <input type="number" id="num-min" value="1" inputmode="numeric">
+            </div>
+            <div>
+              <label for="num-max">Máximo</label>
+              <input type="number" id="num-max" value="60" inputmode="numeric">
+            </div>
+          </div>
+
+          <label for="qtd-numeros">Quantidade de números</label>
+          <input type="number" id="qtd-numeros" min="1" value="6" inputmode="numeric">
+
+          <div class="opcao">
+            <input type="checkbox" id="permitir-repetidos">
+            <label for="permitir-repetidos">Permitir números repetidos</label>
           </div>
         </fieldset>
 
