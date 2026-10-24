@@ -24,6 +24,7 @@ const el = {
   permitirRepetidos: $('permitir-repetidos'),
   msgResultado: $('msg-resultado'),
   listaResultado: $('lista-resultado'),
+  btnCopiar: $('btn-copiar'),
   listaHistorico: $('lista-historico'),
   historicoVazio: $('historico-vazio'),
   btnLimparHistorico: $('btn-limpar-historico'),
@@ -32,6 +33,7 @@ const el = {
 const MENSAGEM_INICIAL = 'Preencha os campos e clique em “Sortear”.';
 
 let modo = 'nomes'; // 'nomes' ou 'numeros'
+let ultimoResultado = []; // itens do último sorteio, usados para copiar
 
 /** Singular ou plural conforme a quantidade. */
 function plural(quantidade, singular, pluralForma) {
@@ -44,6 +46,8 @@ function mostrarMensagem(texto, ehErro = false) {
   el.msgResultado.classList.toggle('erro', ehErro);
   el.listaResultado.hidden = true;
   el.listaResultado.replaceChildren();
+  el.btnCopiar.hidden = true;
+  ultimoResultado = [];
 }
 
 /** Cria um <li> com o valor sorteado. textContent evita injeção de HTML. */
@@ -60,6 +64,8 @@ function mostrarResultado(itens, descricao) {
   el.msgResultado.classList.remove('erro');
   el.listaResultado.replaceChildren(...itens.map(criarItem));
   el.listaResultado.hidden = false;
+  el.btnCopiar.hidden = false;
+  ultimoResultado = itens;
 }
 
 /** Volta a área de resultado ao estado inicial. */
@@ -149,6 +155,28 @@ function registrarNoHistorico(tipo, itens) {
   renderizarHistorico();
 }
 
+const TEXTO_COPIAR = 'Copiar resultado';
+let temporizadorCopia;
+
+/** Mostra um aviso rápido no próprio botão de copiar. */
+function avisarNoBotao(texto) {
+  clearTimeout(temporizadorCopia);
+  el.btnCopiar.textContent = texto;
+  temporizadorCopia = setTimeout(() => {
+    el.btnCopiar.textContent = TEXTO_COPIAR;
+  }, 2000);
+}
+
+/** Copia o resultado (um item por linha) para a área de transferência. */
+async function copiarResultado() {
+  try {
+    await navigator.clipboard.writeText(ultimoResultado.join('\n'));
+    avisarNoBotao('Copiado!');
+  } catch {
+    avisarNoBotao('Não foi possível copiar');
+  }
+}
+
 /** Trata o clique em "Sortear" (envio do formulário). */
 function tratarEnvio(evento) {
   evento.preventDefault();
@@ -174,5 +202,7 @@ el.btnLimparHistorico.addEventListener('click', () => {
   limparHistorico();
   renderizarHistorico();
 });
+
+el.btnCopiar.addEventListener('click', copiarResultado);
 
 renderizarHistorico();
