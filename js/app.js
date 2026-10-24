@@ -4,8 +4,8 @@
  * Todo texto dinâmico entra na página com textContent (nunca innerHTML).
  */
 
-import { sortearItens } from './sorteio.js';
-import { validarNomes } from './validacao.js';
+import { sortearItens, sortearNumeros } from './sorteio.js';
+import { validarNomes, validarNumeros } from './validacao.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -14,9 +14,20 @@ const el = {
   nomes: $('nomes'),
   qtdNomes: $('qtd-nomes'),
   ignorarRepetidos: $('ignorar-repetidos'),
+  botoesModo: document.querySelectorAll('.modo'),
+  camposNomes: $('campos-nomes'),
+  camposNumeros: $('campos-numeros'),
+  min: $('num-min'),
+  max: $('num-max'),
+  qtdNumeros: $('qtd-numeros'),
+  permitirRepetidos: $('permitir-repetidos'),
   msgResultado: $('msg-resultado'),
   listaResultado: $('lista-resultado'),
 };
+
+const MENSAGEM_INICIAL = 'Preencha os campos e clique em “Sortear”.';
+
+let modo = 'nomes'; // 'nomes' ou 'numeros'
 
 /** Singular ou plural conforme a quantidade. */
 function plural(quantidade, singular, pluralForma) {
@@ -47,6 +58,22 @@ function mostrarResultado(itens, descricao) {
   el.listaResultado.hidden = false;
 }
 
+/** Volta a área de resultado ao estado inicial. */
+function limparResultado() {
+  mostrarMensagem(MENSAGEM_INICIAL);
+}
+
+/** Alterna entre sorteio de nomes e de números. */
+function trocarModo(novoModo) {
+  modo = novoModo;
+  el.camposNomes.hidden = modo !== 'nomes';
+  el.camposNumeros.hidden = modo !== 'numeros';
+  el.botoesModo.forEach((botao) => {
+    botao.setAttribute('aria-pressed', String(botao.dataset.modo === modo));
+  });
+  limparResultado();
+}
+
 /** Lê o formulário de nomes e faz o sorteio. */
 function sortearNomes() {
   const dados = validarNomes({
@@ -65,10 +92,28 @@ function sortearNomes() {
   };
 }
 
+/** Lê o formulário de números e faz o sorteio. */
+function sortearNumerosDoForm() {
+  const dados = validarNumeros({
+    min: el.min.value,
+    max: el.max.value,
+    qtd: el.qtdNumeros.value,
+    repetir: el.permitirRepetidos.checked,
+  });
+  if (!dados.ok) return dados;
+
+  const itens = sortearNumeros(dados.min, dados.max, dados.qtd, dados.repetir);
+  return {
+    ok: true,
+    itens,
+    descricao: `${itens.length} ${plural(itens.length, 'número sorteado', 'números sorteados')} entre ${dados.min} e ${dados.max}.`,
+  };
+}
+
 /** Trata o clique em "Sortear" (envio do formulário). */
 function tratarEnvio(evento) {
   evento.preventDefault();
-  const resultado = sortearNomes();
+  const resultado = modo === 'nomes' ? sortearNomes() : sortearNumerosDoForm();
 
   if (!resultado.ok) {
     mostrarMensagem(resultado.erro, true);
@@ -80,3 +125,7 @@ function tratarEnvio(evento) {
 }
 
 el.form.addEventListener('submit', tratarEnvio);
+
+el.botoesModo.forEach((botao) => {
+  botao.addEventListener('click', () => trocarModo(botao.dataset.modo));
+});
