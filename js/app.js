@@ -6,6 +6,7 @@
 
 import { sortearItens, sortearNumeros } from './sorteio.js';
 import { validarNomes, validarNumeros } from './validacao.js';
+import { carregarHistorico, salvarEntrada, limparHistorico } from './historico.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -23,6 +24,9 @@ const el = {
   permitirRepetidos: $('permitir-repetidos'),
   msgResultado: $('msg-resultado'),
   listaResultado: $('lista-resultado'),
+  listaHistorico: $('lista-historico'),
+  historicoVazio: $('historico-vazio'),
+  btnLimparHistorico: $('btn-limpar-historico'),
 };
 
 const MENSAGEM_INICIAL = 'Preencha os campos e clique em “Sortear”.';
@@ -110,6 +114,41 @@ function sortearNumerosDoForm() {
   };
 }
 
+/** Formata o horário do sorteio para o histórico. */
+function formatarData(milissegundos) {
+  return new Date(milissegundos).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+}
+
+/** Monta um item do histórico. Tudo entra com textContent. */
+function criarItemHistorico(entrada) {
+  const item = document.createElement('li');
+
+  const meta = document.createElement('span');
+  meta.className = 'historico-meta';
+  meta.textContent = `${formatarData(entrada.data)} — ${entrada.tipo === 'nomes' ? 'Nomes' : 'Números'}`;
+
+  const valores = document.createElement('span');
+  valores.className = 'historico-valores';
+  valores.textContent = entrada.resultado.join(', ');
+
+  item.append(meta, valores);
+  return item;
+}
+
+/** Redesenha a lista do histórico a partir do que está salvo. */
+function renderizarHistorico() {
+  const entradas = carregarHistorico();
+  el.listaHistorico.replaceChildren(...entradas.map(criarItemHistorico));
+  el.historicoVazio.hidden = entradas.length > 0;
+  el.btnLimparHistorico.hidden = entradas.length === 0;
+}
+
+/** Guarda o sorteio no histórico e atualiza a lista na tela. */
+function registrarNoHistorico(tipo, itens) {
+  salvarEntrada({ tipo, resultado: itens, data: Date.now() });
+  renderizarHistorico();
+}
+
 /** Trata o clique em "Sortear" (envio do formulário). */
 function tratarEnvio(evento) {
   evento.preventDefault();
@@ -122,6 +161,7 @@ function tratarEnvio(evento) {
   }
 
   mostrarResultado(resultado.itens, resultado.descricao);
+  registrarNoHistorico(modo, resultado.itens);
 }
 
 el.form.addEventListener('submit', tratarEnvio);
@@ -129,3 +169,10 @@ el.form.addEventListener('submit', tratarEnvio);
 el.botoesModo.forEach((botao) => {
   botao.addEventListener('click', () => trocarModo(botao.dataset.modo));
 });
+
+el.btnLimparHistorico.addEventListener('click', () => {
+  limparHistorico();
+  renderizarHistorico();
+});
+
+renderizarHistorico();
