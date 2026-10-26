@@ -65,7 +65,7 @@ tests/              testes unitários (node --test)
 
 ![Aba Rede mostrando a requisição que carregou a página](docs/aba-rede.png)
 
-[Explicação, 2 a 3 linhas: o print mostra a requisição `GET http://localhost:8000/` (o `index.html`) com status `200 OK`, seguida dos arquivos `css/style.css` e `js/*.js`, também com `GET` e `200`. Como o app é da trilha C, não há chamadas a APIs externas: tudo é carregado do servidor local e os dados ficam só no navegador.]
+[Explicação: o print mostra a requisição `GET http://localhost:8000/` (o `index.html`) com status `200 OK`, seguida dos arquivos `css/style.css` e `js/*.js`, também com `GET` e `200`. Como o app é da trilha C, não há chamadas a APIs externas: tudo é carregado do servidor local e os dados ficam só no navegador.]
 
 ## Uso de IA
 
