@@ -61,6 +61,12 @@ tests/              testes unitários (node --test)
 - **Acessibilidade:** `label` ligado a cada campo, `aria-live` no resultado, `aria-invalid` nos erros, foco visível, link para pular ao conteúdo e animação desligada para quem prefere menos movimento.
 - **Plano B:** como o app não usa API, não há dependência de internet depois que a página carrega.
 
+## Aba Rede do navegador
+
+![Aba Rede mostrando a requisição que carregou a página](docs/aba-rede.png)
+
+[Explicação, 2 a 3 linhas: o print mostra a requisição `GET http://localhost:8000/` (o `index.html`) com status `200 OK`, seguida dos arquivos `css/style.css` e `js/*.js`, também com `GET` e `200`. Como o app é da trilha C, não há chamadas a APIs externas: tudo é carregado do servidor local e os dados ficam só no navegador.]
+
 ## Uso de IA
 
 | Item | Detalhe |
