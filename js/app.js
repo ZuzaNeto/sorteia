@@ -70,6 +70,7 @@ function mostrarResultado(itens, descricao) {
 
 /** Volta a área de resultado ao estado inicial. */
 function limparResultado() {
+  marcarCampoInvalido();
   mostrarMensagem(MENSAGEM_INICIAL);
 }
 
@@ -177,6 +178,15 @@ async function copiarResultado() {
   }
 }
 
+/** Marca (aria-invalid) e foca o campo com erro; sem argumento, limpa as marcas. */
+function marcarCampoInvalido(idCampo) {
+  document.querySelectorAll('[aria-invalid]').forEach((campo) => campo.removeAttribute('aria-invalid'));
+  if (!idCampo) return;
+  const campo = $(idCampo);
+  campo.setAttribute('aria-invalid', 'true');
+  campo.focus();
+}
+
 /** Trata o clique em "Sortear" (envio do formulário). */
 function tratarEnvio(evento) {
   evento.preventDefault();
@@ -184,10 +194,11 @@ function tratarEnvio(evento) {
 
   if (!resultado.ok) {
     mostrarMensagem(resultado.erro, true);
-    $(resultado.campo)?.focus();
+    marcarCampoInvalido(resultado.campo);
     return;
   }
 
+  marcarCampoInvalido();
   mostrarResultado(resultado.itens, resultado.descricao);
   registrarNoHistorico(modo, resultado.itens);
 }

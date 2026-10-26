@@ -269,3 +269,25 @@ textarea { min-height: 8rem; resize: vertical; }
     --cor-foco: #ffd05f;
   }
 }
+
+/* ---------- 4) Acessibilidade ---------- */
+.pular-link {
+  position: absolute;
+  top: -4rem;
+  left: 1rem;
+  z-index: 10;
+  padding: 0.6rem 1rem;
+  color: var(--cor-sobre-primaria);
+  background: var(--cor-primaria);
+  border-radius: 6px;
+}
+
+.pular-link:focus { top: 1rem; }
+
+:focus-visible { outline: 3px solid var(--cor-foco); outline-offset: 2px; }
+
+[aria-invalid="true"] { border-color: var(--cor-erro); border-width: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lista-resultado li { animation: none; }
+}
